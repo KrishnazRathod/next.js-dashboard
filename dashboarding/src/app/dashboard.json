@@ -1,0 +1,89 @@
+{
+  "dashboard": {
+    "title": "CNAPP Dashboard",
+    "sections": [
+      {
+        "title": "CSPM Executive Dashboard",
+        "widgets": [
+          {
+            "title": "Cloud Accounts",
+            "status": true,
+            "type": "doughnut_chart",
+            "data": {
+              "total": 2,
+              "segments": [
+                {
+                  "label": "Connected",
+                  "value": 2,
+                  "color": "#0088FE"
+                },
+                {
+                  "label": "Not Connected",
+                  "value": 2,
+                  "color": "#BBDEFB"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Cloud Account Risk Assessment",
+            "status": true,
+            "type": "doughnut_chart",
+            "data": {
+              "total": 9659,
+              "segments": [
+                {
+                  "label": "Failed",
+                  "value": 1689,
+                  "color": "#FF4136"
+                },
+                {
+                  "label": "Warning",
+                  "value": 681,
+                  "color": "#FF851B"
+                },
+                {
+                  "label": "Not available",
+                  "value": 36,
+                  "color": "#DDDDDD"
+                },
+                {
+                  "label": "Passed",
+                  "value": 7253,
+                  "color": "#2ECC40"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "CWPP Dashboard",
+        "widgets": [
+          {
+            "title": "Top 5 Namespace Specific Alerts",
+            "status": true,
+            "type": "empty_state",
+            "message": "No Graph data available!"
+          },
+          {
+            "title": "Workload Alerts",
+            "status": true,
+            "type": "empty_state",
+            "message": "No Graph data available!"
+          }
+        ]
+      }
+    ]
+  },
+  "controls": {
+    "add_widget_button": {
+      "label": "Add Widget",
+      "actions": ["add"]
+    },
+    "date_range_selector": {
+      "label": "Last 2 days",
+      "options": ["Last 24 hours", "Last 7 days", "Last 30 days"]
+    }
+  }
+}
