@@ -45,7 +45,7 @@ function AddWidget({
           right="0"
           overflowY="auto"
         >
-          <Flex bgColor={"blue"} justifyContent={"flex-start"} p={4}>
+          <Flex bgColor={"blue"} justifyContent={"flex-start"} p={3}>
             <Text color={"white"}>Add Widget</Text>
           </Flex>
           <Flex p={3} flexDir={"column"}>
@@ -97,7 +97,7 @@ function AddWidget({
               </TabPanels>
             </Tabs>
           </Flex>
-          <Button onClick={onUpdate} mb={4}>
+          <Button onClick={onUpdate} ml={4}>
             Close
           </Button>
         </Box>

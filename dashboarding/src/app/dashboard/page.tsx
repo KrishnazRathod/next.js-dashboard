@@ -1,44 +1,47 @@
 "use client";
+
 import {
   Box,
   Flex,
-  Input,
-  InputGroup,
-  Text,
-  InputLeftElement,
-  Button,
   Grid,
+  Text,
+  Input,
+  Button,
+  InputGroup,
   useDisclosure,
+  InputLeftElement,
 } from "@chakra-ui/react";
-import React, { useEffect, useMemo, useState } from "react";
-import PlusIcon from "../components/icons/PlusIcon";
+
+import React, { useEffect, useState } from "react";
+
+import PieChart from "../components/PieChart";
+import dashboardData from "../dashboard.json";
+import AddWidget from "../components/AddWidget";
 import Reload from "../components/icons/Reload";
+import TimeIcon from "../components/icons/TimeIcon";
+import PlusIcon from "../components/icons/PlusIcon";
 import MenuIcon from "../components/icons/MenuIcon";
 import ArrowDown from "../components/icons/ArrowDown";
-import TimeIcon from "../components/icons/TimeIcon";
-import PieChart from "../components/PieChart";
 import GraphIcon from "../components/icons/GraphIcon";
-import dashboardData from "../dashboard.json";
-
 import SearchIcon from "../components/icons/SerachIcon";
-import AddWidget from "../components/AddWidget";
 
 const DashboardV2 = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [tabList, setTabList] = useState<any[]>([]);
   const [tabSelect, setTabSelect] = useState<string>("");
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
-  const home: any = "Home";
-  const dashboardV2: any = "DashboardV2";
+  const [search, setSearch] = useState("");
+  const homeText: any = "Home";
+  const dashboardV2Text: any = "DashboardV2";
   const donutHoleSize: any = 70;
   const [dashboardJsonData, setDashboardJsonData] =
     useState<any>(dashboardData);
 
   useEffect(() => {
     setDashboardJsonData(dashboardData);
-    const tabData = dashboardJsonData.dashboard.sections[0];
+    const tabData = dashboardData.dashboard.sections[0];
     setTabList(tabData.widgets);
-  }, [dashboardData]);
+  }, []);
 
   const onTabChange = (index: number) => {
     const tabData = dashboardJsonData.dashboard.sections[index];
@@ -47,11 +50,11 @@ const DashboardV2 = () => {
     setSelectedTabIndex(index);
   };
 
-  function updateStatus(
+  const updateStatus = (
     dashboardJsonData: any,
     sectionTitle: string,
     widgetTitle: string
-  ) {
+  ) => {
     const updatedDashboard = {
       ...dashboardJsonData,
       dashboard: {
@@ -74,37 +77,33 @@ const DashboardV2 = () => {
     };
 
     return updatedDashboard;
-  }
+  };
 
   const handleCheckBoxChange = (title: any, index: any) => {
     const updatedData = updateStatus(dashboardJsonData, tabSelect, title);
     setDashboardJsonData(updatedData);
-    const updateData = { ...updatedData };
-    const updatedTabList = updateData.dashboard.sections[index].widgets;
+    const updatedTabList = updatedData.dashboard.sections[index].widgets;
     setTabList([...updatedTabList]);
   };
 
-  const filterWidgetsByStatus = (data: any) => {
-    data.dashboard.sections.forEach((section: any) => {
-      section.widgets = section.widgets.filter((widget: any) => widget.status);
-    });
-
-    return data;
+  const handleReload = () => {
+    setDashboardJsonData(dashboardData);
+    const tabData = dashboardData.dashboard.sections[selectedTabIndex];
+    setTabList(tabData.widgets);
   };
 
-  const handleUpdate = () => {
-    const filteredData = filterWidgetsByStatus(dashboardJsonData);
-    setDashboardJsonData(filteredData);
-    onClose();
-  };
+  const filteredWidgets = (widgets: any[]) =>
+    widgets.filter((widget) =>
+      widget.title.toLowerCase().includes(search.toLowerCase())
+    );
 
   return (
     <>
       <Box borderTop={"2px solid blue"} p={2}>
         <Flex mb={2}>
           <Flex width={"40%"} alignItems={"center"}>
-            <Text fontWeight={200} mr={1}>{`${home} `}</Text>
-            <Text fontWeight={400}>{`> ${dashboardV2}`}</Text>
+            <Text fontWeight={200} mr={1}>{`${homeText} `}</Text>
+            <Text fontWeight={400}>{`> ${dashboardV2Text}`}</Text>
           </Flex>
           <Flex width={"60%"}>
             <Box width={"50%"}>
@@ -114,7 +113,12 @@ const DashboardV2 = () => {
                   h="100%"
                   children={<SearchIcon />}
                 />
-                <Input variant="filled" placeholder="Search anything..." />
+                <Input
+                  variant="filled"
+                  placeholder="Search anything..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
               </InputGroup>
             </Box>
           </Flex>
@@ -137,6 +141,7 @@ const DashboardV2 = () => {
               </Button>
               <Flex gap={2}>
                 <Button
+                  onClick={handleReload}
                   rightIcon={<Reload />}
                   colorScheme="teal"
                   variant="outline"
@@ -171,68 +176,75 @@ const DashboardV2 = () => {
                   templateColumns={{
                     base: "repeat(1, 1fr)",
                     sm: "repeat(2, 1fr)",
-                    md: "repeat(3, 1fr)",
-                    lg: "repeat(4, 1fr)",
+                    lg: "repeat(3, 1fr)",
                   }}
                   gap={1}
                   flexDir={"column"}
                 >
-                  {section.widgets.map((widget: any, widgetIndex: any) => {
-                    return (
-                      <Flex
-                        borderRadius={"10px"}
-                        width={"30%"}
-                        minWidth={"450px"}
-                        height={"280px"}
-                        p={3}
-                        bgColor={"#F0F0F5"}
-                        key={widgetIndex}
-                      >
-                        <Flex p={2} bgColor={"white"} h={"100%"} w={"100%"}>
-                          <Flex width={"100%"} h={"100%"} flexDir={"column"}>
-                            <Text fontWeight={600} mb={2}>
-                              {widget.title}
-                            </Text>
-                            {widget.type === "doughnut_chart" && (
-                              <Flex justifyContent={"space-between"}>
-                                <PieChart
-                                  donutSize={donutHoleSize}
-                                  data={widget.data.segments}
-                                />
-                              </Flex>
-                            )}
-                            {widget.type === "empty_state" && (
-                              <Flex
-                                h={"100%"}
-                                gap={1}
-                                flexDir={"column"}
-                                justifyContent={"center"}
-                                alignItems={"center"}
-                              >
-                                <Box opacity={"0.3"}>
-                                  <GraphIcon />
-                                </Box>
-                                <Text>{widget.message}</Text>
-                              </Flex>
-                            )}
-                            {widget.type === "button" && (
+                  {filteredWidgets(section.widgets).map(
+                    (widget: any, widgetIndex: any) => {
+                      if (widget.status) {
+                        return (
+                          <Flex
+                            borderRadius={"10px"}
+                            width={"30%"}
+                            minWidth={"450px"}
+                            height={"280px"}
+                            p={3}
+                            bgColor={"#F0F0F5"}
+                            key={widgetIndex}
+                          >
+                            <Flex p={2} bgColor={"white"} h={"100%"} w={"100%"}>
                               <Flex
                                 width={"100%"}
-                                justifyContent={"center"}
-                                alignItems={"center"}
                                 h={"100%"}
                                 flexDir={"column"}
                               >
-                                <Button rightIcon={<PlusIcon />}>
-                                  {widget.label}
-                                </Button>
+                                <Text fontWeight={600} mb={2}>
+                                  {widget.title}
+                                </Text>
+                                {widget.type === "doughnut_chart" && (
+                                  <Flex justifyContent={"space-between"}>
+                                    <PieChart
+                                      donutSize={donutHoleSize}
+                                      data={widget.data.segments}
+                                    />
+                                  </Flex>
+                                )}
+                                {widget.type === "empty_state" && (
+                                  <Flex
+                                    h={"100%"}
+                                    gap={1}
+                                    flexDir={"column"}
+                                    justifyContent={"center"}
+                                    alignItems={"center"}
+                                  >
+                                    <Box opacity={"0.3"}>
+                                      <GraphIcon />
+                                    </Box>
+                                    <Text>{widget.message}</Text>
+                                  </Flex>
+                                )}
+                                {widget.type === "button" && (
+                                  <Flex
+                                    width={"100%"}
+                                    justifyContent={"center"}
+                                    alignItems={"center"}
+                                    h={"100%"}
+                                    flexDir={"column"}
+                                  >
+                                    <Button rightIcon={<PlusIcon />}>
+                                      {widget.label}
+                                    </Button>
+                                  </Flex>
+                                )}
                               </Flex>
-                            )}
+                            </Flex>
                           </Flex>
-                        </Flex>
-                      </Flex>
-                    );
-                  })}
+                        );
+                      }
+                    }
+                  )}
                   <Flex
                     borderRadius={"10px"}
                     minWidth={"450px"}
@@ -263,7 +275,7 @@ const DashboardV2 = () => {
         dashData={dashboardData}
         list={tabList}
         handleCheckbox={handleCheckBoxChange}
-        onUpdate={handleUpdate}
+        onUpdate={onClose}
         tabChange={onTabChange}
       />
     </>
