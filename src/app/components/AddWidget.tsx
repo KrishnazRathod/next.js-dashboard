@@ -32,6 +32,10 @@ function AddWidget({
   handleCheckbox,
   onUpdate,
 }: DashboardProps) {
+  useEffect(() => {
+    tabChange(0);
+  }, []);
+
   return (
     <>
       <Slide direction="right" in={isModal} style={{ zIndex: 10 }}>

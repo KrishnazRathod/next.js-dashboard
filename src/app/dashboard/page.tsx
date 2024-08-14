@@ -108,11 +108,9 @@ const DashboardV2 = () => {
           <Flex width={"60%"}>
             <Box width={"50%"}>
               <InputGroup>
-                <InputLeftElement
-                  pointerEvents="none"
-                  h="100%"
-                  children={<SearchIcon />}
-                />
+                <InputLeftElement pointerEvents="none" h="100%">
+                  <SearchIcon />
+                </InputLeftElement>
                 <Input
                   variant="filled"
                   placeholder="Search anything..."
