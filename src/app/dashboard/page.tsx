@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Box,
   Flex,
@@ -9,11 +7,11 @@ import {
   Button,
   InputGroup,
   useDisclosure,
+  CloseButton,
   InputLeftElement,
+  IconButton,
 } from "@chakra-ui/react";
-
 import React, { useEffect, useState } from "react";
-
 import PieChart from "../components/PieChart";
 import dashboardData from "../dashboard.json";
 import AddWidget from "../components/AddWidget";
@@ -48,6 +46,32 @@ const DashboardV2 = () => {
     setTabList(tabData.widgets);
     setTabSelect(tabData.title);
     setSelectedTabIndex(index);
+  };
+
+  const removeWidget = (
+    dashboardJsonData: any,
+    sectionTitle: string,
+    widgetTitle: string
+  ) => {
+    const updatedDashboard = {
+      ...dashboardJsonData,
+      dashboard: {
+        ...dashboardJsonData.dashboard,
+        sections: dashboardJsonData.dashboard.sections.map((section: any) => {
+          if (section.title === sectionTitle) {
+            return {
+              ...section,
+              widgets: section.widgets.filter(
+                (widget: any) => widget.title !== widgetTitle
+              ),
+            };
+          }
+          return section;
+        }),
+      },
+    };
+
+    return updatedDashboard;
   };
 
   const updateStatus = (
@@ -86,6 +110,91 @@ const DashboardV2 = () => {
     setTabList([...updatedTabList]);
   };
 
+  const addWidget = (
+    dashboardJsonData: any,
+    sectionTitle: string,
+    newWidget: any
+  ) => {
+    const updatedDashboard = {
+      ...dashboardJsonData,
+      dashboard: {
+        ...dashboardJsonData.dashboard,
+        sections: dashboardJsonData.dashboard.sections.map((section: any) => {
+          if (section.title === sectionTitle) {
+            return {
+              ...section,
+              widgets: [...section.widgets, newWidget],
+            };
+          }
+          return section;
+        }),
+      },
+    };
+
+    return updatedDashboard;
+  };
+
+  const handleAddWidget = (tabIndex: string, widgetName: string) => {
+    const tabName = dashboardJsonData.dashboard.sections[tabIndex].title;
+    const tabType =
+      dashboardJsonData.dashboard.sections[tabIndex].widgets[0].type;
+    let newWidget: any;
+    if (tabType === "empty_state") {
+      newWidget = {
+        title: widgetName,
+        status: true,
+        type: tabType,
+        message: "No Graph data available!",
+      };
+    } else if (tabType === "doughnut_chart") {
+      newWidget = {
+        title: widgetName,
+        status: true,
+        type: tabType,
+        data: {
+          total: 2,
+          segments: [
+            {
+              label: "Connected",
+              value: 2,
+              color: "#0088FE",
+            },
+            {
+              label: "Not Connected",
+              value: 2,
+              color: "#BBDEFB",
+            },
+          ],
+        },
+      };
+    }
+    const updatedDashboardData = addWidget(
+      dashboardJsonData,
+      tabName,
+      newWidget
+    );
+    setDashboardJsonData(updatedDashboardData);
+    const updatedTabList =
+      updatedDashboardData.dashboard.sections[selectedTabIndex].widgets;
+    setTabList([...updatedTabList]);
+  };
+
+  const handleRemoveWidget = (
+    sectionTitle: string,
+    widgetTitle: string,
+    index: number
+  ) => {
+    const updatedDashboardData = removeWidget(
+      dashboardJsonData,
+      sectionTitle,
+      widgetTitle
+    );
+    setDashboardJsonData(updatedDashboardData);
+    const updatedTabList =
+      updatedDashboardData.dashboard.sections[index].widgets;
+    setTabList([...updatedTabList]);
+  };
+
   const handleReload = () => {
     setDashboardJsonData(dashboardData);
     const tabData = dashboardData.dashboard.sections[selectedTabIndex];
@@ -94,7 +203,7 @@ const DashboardV2 = () => {
 
   const filteredWidgets = (widgets: any[]) =>
     widgets.filter((widget) =>
-      widget.title.toLowerCase().includes(search.toLowerCase())
+      widget?.title?.toLowerCase().includes(search?.toLowerCase())
     );
 
   return (
@@ -198,9 +307,23 @@ const DashboardV2 = () => {
                                 h={"100%"}
                                 flexDir={"column"}
                               >
-                                <Text fontWeight={600} mb={2}>
-                                  {widget.title}
-                                </Text>
+                                <Flex justifyContent={"space-between"}>
+                                  <Text fontWeight={600} mb={2}>
+                                    {widget.title}
+                                  </Text>
+                                  <IconButton
+                                    icon={<CloseButton />}
+                                    size="xs"
+                                    onClick={() =>
+                                      handleRemoveWidget(
+                                        section.title,
+                                        widget.title,
+                                        widgetIndex
+                                      )
+                                    }
+                                    aria-label={""}
+                                  />
+                                </Flex>
                                 {widget.type === "doughnut_chart" && (
                                   <Flex justifyContent={"space-between"}>
                                     <PieChart
@@ -274,6 +397,7 @@ const DashboardV2 = () => {
         list={tabList}
         handleCheckbox={handleCheckBoxChange}
         onUpdate={onClose}
+        addNewWidget={handleAddWidget}
         tabChange={onTabChange}
       />
     </>
