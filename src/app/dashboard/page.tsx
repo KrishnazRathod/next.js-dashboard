@@ -1,3 +1,4 @@
+"use client";
 import {
   Box,
   Flex,
@@ -36,6 +37,7 @@ const DashboardV2 = () => {
     useState<any>(dashboardData);
 
   useEffect(() => {
+    PlusIcon;
     setDashboardJsonData(dashboardData);
     const tabData = dashboardData.dashboard.sections[0];
     setTabList(tabData.widgets);
@@ -311,9 +313,8 @@ const DashboardV2 = () => {
                                   <Text fontWeight={600} mb={2}>
                                     {widget.title}
                                   </Text>
-                                  <IconButton
-                                    icon={<CloseButton />}
-                                    size="xs"
+                                  <CloseButton
+                                    size="sm"
                                     onClick={() =>
                                       handleRemoveWidget(
                                         section.title,
