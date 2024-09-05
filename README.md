@@ -45,6 +45,3 @@ Deploy your app using the [Vercel Platform](https://vercel.com/new?utm_medium=de
 - Modal for adding new widgets.
 - Options for widget selection and configuration.
 
----
-
-This summary gives a brief overview of starting the project and using the `DashboardV2` and `AddWidget` components.
