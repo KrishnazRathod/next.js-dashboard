@@ -300,6 +300,7 @@ const DashboardV2 = () => {
                             minWidth={"450px"}
                             height={"280px"}
                             p={3}
+                            mb={3}
                             bgColor={"#F0F0F5"}
                             key={widgetIndex}
                           >
